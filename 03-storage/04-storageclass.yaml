@@ -1,0 +1,9 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nfs-emmc
+  annotations:
+    storageclass.kubernetes.io/is-default-class: true
+provisioner: nfs-provisioner/nfs-emmc
+parameters:
+  archiveOnDelete: "true"

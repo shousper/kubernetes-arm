@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Setup tiller service account with sufficient permissions
+kubectl --namespace kube-system create serviceaccount tiller
+kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
+
+# Setup helm with arm64 image and service account
+helm init --service-account tiller --tiller-image jessestuart/tiller
+# kubectl --namespace kube-system patch deploy tiller-deploy  -p '{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}'
+
+# Patch Helm to land on an ARM node because of the used image
+kubectl patch deployment tiller-deploy -n kube-system --patch '{"spec": {"template": {"spec": {"nodeSelector": {"beta.kubernetes.io/arch": "arm64"}}}}}'

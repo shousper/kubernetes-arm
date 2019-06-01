@@ -1,0 +1,38 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql
+  labels:
+    app: mysql
+data:
+  master.cnf: |
+    [mysqld]
+    # Disable name resolution for client connections
+    skip-name-resolve
+    # Enable the bin logging
+    log-bin=mysql-0-bin
+    # Allow connections from any IP
+    bind-address=0.0.0.0
+    # Some extra options from a recommendation
+    # See: http://www.clusterdb.com/mysql-cluster/get-mysql-replication-up-and-running-in-5-minutes
+    # This option was commented out it causes the first start of the master to hang..
+    #sync_binlog=1
+    innodb_flush_log_at_trx_commit=1
+    # Set some default we need
+    character-set-server=UTF8
+    collation-server=utf8_general_ci
+  slave.cnf: |
+    [mysqld]
+    # Slaves must be read-only.
+    read-only
+    # Disable name resolution for client connections
+    skip-name-resolve
+    # Specify names for relay log files to stabilize replication???
+    relay-log-index=slave-relay-bin.index
+    relay-log=slave-relay-bin
+    # Skip duplicate key errors #hackz
+    slave-skip-errors=1062
+    # Set some default we need
+    character-set-server=UTF8
+    collation-server=utf8_general_ci
